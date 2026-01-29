@@ -83,7 +83,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                             )}
                         </div>
                     )}
-                    )}
+
 
                     {/* Reviews Section */}
                     <div className="mt-12">
