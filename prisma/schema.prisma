@@ -25,6 +25,10 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
+  password      String?
+  isVerified    Boolean   @default(false)
+  verificationToken String?
+
   role          Role      @default(GUEST)
   accounts      Account[]
   sessions      Session[]
