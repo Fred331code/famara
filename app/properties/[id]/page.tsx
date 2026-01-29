@@ -83,6 +83,43 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                             )}
                         </div>
                     )}
+                    )}
+
+                    {/* Reviews Section */}
+                    <div className="mt-12">
+                        <h3 className="text-xl font-semibold mb-6">Guest Reviews</h3>
+                        {property.reviews && property.reviews.length > 0 ? (
+                            <div className="space-y-6">
+                                {property.reviews.map((review) => (
+                                    <div key={review.id} className="border-b pb-6">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="h-8 w-8 bg-slate-200 rounded-full flex items-center justify-center overflow-hidden">
+                                                {review.user?.image ? (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img src={review.user.image} alt={review.user.name || "Guest"} />
+                                                ) : (
+                                                    <span className="text-xs font-bold">{review.user?.name?.[0] || "G"}</span>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium">{review.user?.name || "Guest"}</p>
+                                                <p className="text-xs text-muted-foreground">{new Date(review.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-1 mb-2 text-yellow-500 text-sm">
+                                            {"★".repeat(review.rating)}
+                                            <span className="text-slate-300">{"★".repeat(5 - review.rating)}</span>
+                                        </div>
+                                        <p className="text-slate-600">{review.comment}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-muted-foreground bg-slate-50 p-6 rounded-lg text-center">
+                                No reviews yet. Be the first to stay!
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Right Column: Booking Card */}
