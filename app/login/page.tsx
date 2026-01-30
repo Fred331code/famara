@@ -90,6 +90,12 @@ function LoginForm() {
                         />
                     </div>
 
+                    <div className="flex justify-end">
+                        <Link href="/forgot-password" className="text-sm text-muted-foreground hover:underline">
+                            Forgot Password?
+                        </Link>
+                    </div>
+
                     <Button type="submit" className="w-full" disabled={loading}>
                         {loading ? "Logging in..." : "Login"}
                     </Button>

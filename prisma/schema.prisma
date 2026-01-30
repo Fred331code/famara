@@ -28,6 +28,9 @@ model User {
   password      String?
   isVerified    Boolean   @default(false)
   verificationToken String?
+  
+  resetToken       String?
+  resetTokenExpiry DateTime?
 
   role          Role      @default(GUEST)
   accounts      Account[]
