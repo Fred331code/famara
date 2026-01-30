@@ -36,12 +36,19 @@ export async function POST(req: Request) {
 
         const resetLink = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
-        await resend.emails.send({
+        const { data, error } = await resend.emails.send({
             from: "onboarding@resend.dev",
             to: email,
             subject: "Reset your password - Famara Booking",
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 1 hour.</p>`
         });
+
+        if (error) {
+            console.error("[RESEND_ERROR]", error);
+            // Don't fail the request, just log it. Or fail if you prefer strict handling.
+        } else {
+            console.log("[RESEND_SUCCESS]", data);
+        }
 
         return NextResponse.json({ message: "If an account exists, a reset link has been sent." });
     } catch (error) {
