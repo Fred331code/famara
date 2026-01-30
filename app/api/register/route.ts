@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     try {
@@ -33,12 +36,15 @@ export async function POST(req: Request) {
             }
         });
 
-        // SIMULATE EMAIL SENDING
-        console.log("------------------------------------------");
-        console.log("📧 SIMULATED EMAIL - VERIFICATION LINK");
-        console.log(`To: ${email}`);
-        console.log(`Link: ${process.env.NEXTAUTH_URL}/api/verify-email?token=${verificationToken}`);
-        console.log("------------------------------------------");
+        // SEND EMAIL VIA RESEND
+        const confirmLink = `${process.env.NEXTAUTH_URL}/api/verify-email?token=${verificationToken}`;
+
+        await resend.emails.send({
+            from: "onboarding@resend.dev",
+            to: email,
+            subject: "Verify your email - Famara Booking",
+            html: `<p>Click <a href="${confirmLink}">here</a> to verify your email.</p>`
+        });
 
         return NextResponse.json(user);
     } catch (error) {
