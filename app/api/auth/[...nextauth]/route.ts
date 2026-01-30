@@ -4,7 +4,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/lib/db"
 import bcrypt from "bcryptjs"
 
-const handler = NextAuth({
+import { NextAuthOptions } from "next-auth"
+
+export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(db) as any,
     session: { strategy: "jwt" },
     providers: [
@@ -26,6 +28,7 @@ const handler = NextAuth({
                 const isValid = await bcrypt.compare(credentials.password, user.password);
                 if (!isValid) return null;
 
+                // @ts-ignore
                 if (!user.isVerified) {
                     throw new Error("Email not verified. Please check your console/email.");
                 }
@@ -61,6 +64,8 @@ const handler = NextAuth({
     pages: {
         signIn: '/login',
     }
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
