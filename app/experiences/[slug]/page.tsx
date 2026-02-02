@@ -2,6 +2,7 @@
 import { EXPERIENCES } from "@/lib/experiences";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ExperienceReservationDialog } from "@/components/experience-reservation-dialog";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Metadata } from "next";
@@ -80,6 +81,7 @@ export default function ExperienceDetailPage({ params }: Props) {
                         <h3 className="text-xl font-bold mb-2">Book your session</h3>
                         <p className="text-slate-500 text-sm mb-6">Secure your spot with Volcanokite Academy.</p>
 
+
                         <div className="space-y-4">
                             <div className="flex justify-between py-3 border-b">
                                 <span className="text-slate-600">Lesson Price</span>
@@ -90,9 +92,11 @@ export default function ExperienceDetailPage({ params }: Props) {
                                 <span className="font-medium">{exp.duration}</span>
                             </div>
 
-                            <Button className="w-full h-12 text-lg">
-                                Reserve Now
-                            </Button>
+                            <ExperienceReservationDialog
+                                experienceTitle={exp.title}
+                                price={exp.price}
+                            />
+
                             <p className="text-xs text-center text-slate-400 mt-2">
                                 You won't be charged yet. We'll confirm availability first.
                             </p>
