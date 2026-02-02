@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 50" fill="none">
+  <!-- Sun (positioned to look like it's emerging from the volcano) -->
+  <circle cx="30" cy="14" r="5" fill="#fbbf24" />
+
+  <!-- Volcano (Trapezoid shape - removed the top triangle point) -->
+  <path d="M18 32 L 25 19 L 35 19 L 42 32 Z" fill="#1e3a8a" />
+  
+  <!-- Base Line for stability visual -->
+  <path d="M15 35H45" stroke="#1e3a8a" stroke-width="2"/>
+  
+  <!-- Text: Increased viewBox to 330 to ensure 'e' fits comfortably -->
+  <text x="55" y="32" font-family="Arial, sans-serif" font-weight="bold" font-size="24" fill="#1e3a8a">Hotel In Lanzarote</text>
+</svg>

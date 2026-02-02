@@ -3,14 +3,42 @@ import { db } from "@/lib/db";
 
 // GET /api/properties
 // Fetch all properties
-export async function GET() {
+export async function GET(req: Request) {
     try {
+        const { searchParams } = new URL(req.url);
+        const startDateParam = searchParams.get("from");
+        const endDateParam = searchParams.get("to");
+
+        let dateFilter: any = {};
+
+        if (startDateParam && endDateParam) {
+            const start = new Date(startDateParam);
+            const end = new Date(endDateParam);
+
+            // Simple validation
+            if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                dateFilter = {
+                    bookings: {
+                        none: {
+                            status: "CONFIRMED",
+                            OR: [
+                                { startDate: { lte: end.toISOString() }, endDate: { gte: start.toISOString() } }, // Overlaps
+                            ]
+                        }
+                    }
+                };
+            }
+        }
+
         const properties = await db.property.findMany({
+            where: {
+                ...dateFilter
+            },
             include: {
                 host: {
                     select: {
                         name: true,
-                        email: true
+                        image: true
                     }
                 }
             },
@@ -18,7 +46,14 @@ export async function GET() {
                 createdAt: 'desc'
             }
         });
-        return NextResponse.json(properties);
+
+        // Strip private fields
+        const safeProperties = properties.map(p => {
+            const { address, contactEmail, contactPhone, ...safe } = p;
+            return safe;
+        });
+
+        return NextResponse.json(safeProperties);
     } catch (error) {
         console.error("[PROPERTIES_GET]", error);
         return NextResponse.json({ error: "Internal Error" }, { status: 500 });

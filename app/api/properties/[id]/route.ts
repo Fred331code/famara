@@ -18,10 +18,15 @@ export async function GET(req: Request, { params }: IParams) {
                 host: {
                     select: {
                         name: true,
-                        email: true
+                        image: true,
+                        // email: true // Hid email for privacy
                     }
                 },
-                bookings: true // Include bookings if needed for availability check
+                // propertyImages: true, // Uncomment if needed
+                bookings: { // Only needed for availability, but could leak booking info? 
+                    // Bookings are public for calendar availability usually (dates only).
+                    select: { startDate: true, endDate: true, status: true }
+                }
             }
         });
 
@@ -29,7 +34,10 @@ export async function GET(req: Request, { params }: IParams) {
             return NextResponse.json({ error: "Property not found" }, { status: 404 });
         }
 
-        return NextResponse.json(property);
+        // Strip private fields
+        const { address, contactEmail, contactPhone, ...publicProperty } = property;
+
+        return NextResponse.json(publicProperty);
     } catch (error) {
         console.error(`[PROPERTY_GET_${params.id}]`, error);
         return NextResponse.json({ error: "Internal Error" }, { status: 500 });

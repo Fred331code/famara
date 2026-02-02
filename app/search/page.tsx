@@ -13,7 +13,7 @@ const PROPERTIES = [
         location: "Caleta de Famara, Lanzarote",
         price: 120,
         rating: 4.9,
-        imageUrl: "https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=2674&auto=format&fit=crop",
+        images: ["https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=2671&auto=format&fit=crop"],
     },
     {
         id: "2",
@@ -21,7 +21,7 @@ const PROPERTIES = [
         location: "Famara, Lanzarote",
         price: 250,
         rating: 4.8,
-        imageUrl: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2670&auto=format&fit=crop",
+        images: ["https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2670&auto=format&fit=crop"],
     },
     {
         id: "3",
@@ -29,7 +29,7 @@ const PROPERTIES = [
         location: "Teguise, Lanzarote",
         price: 85,
         rating: 4.7,
-        imageUrl: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=2670&auto=format&fit=crop",
+        images: ["https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=2670&auto=format&fit=crop"],
     },
     {
         id: "4",
@@ -37,7 +37,7 @@ const PROPERTIES = [
         location: "San Juan, Lanzarote",
         price: 150,
         rating: 4.95,
-        imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2670&auto=format&fit=crop",
+        images: ["https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2670&auto=format&fit=crop"],
     },
     {
         id: "5",
@@ -45,7 +45,7 @@ const PROPERTIES = [
         location: "Caleta de Famara",
         price: 95,
         rating: 4.6,
-        imageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=2580&auto=format&fit=crop",
+        images: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=2580&auto=format&fit=crop"],
     },
     {
         id: "6",
@@ -53,7 +53,7 @@ const PROPERTIES = [
         location: "Famara Hills",
         price: 400,
         rating: 5.0,
-        imageUrl: "https://images.unsplash.com/photo-1600596542815-27bfef402399?q=80&w=2670&auto=format&fit=crop",
+        images: ["https://images.unsplash.com/photo-1600596542815-27bfef402399?q=80&w=2670&auto=format&fit=crop"],
     },
 ];
 
@@ -90,7 +90,7 @@ export default function SearchPage() {
                     {/* Listings Grid */}
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold text-slate-900 mb-6">
-                            Stays in Famara ({PROPERTIES.length})
+                            Accommodations in Famara ({PROPERTIES.length})
                         </h1>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

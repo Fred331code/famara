@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export async function GET(
@@ -19,6 +19,10 @@ export async function GET(
             where: {
                 id: params.id,
                 hostId: session.user.id // Ensure ownership
+            },
+            include: {
+                bookings: true,
+                propertyImages: true
             }
         });
 
@@ -39,13 +43,14 @@ export async function PATCH(
 ) {
     try {
         const session = await getServerSession(authOptions);
-        const { title, description, location, pricePerNight, maxGuests, images, facilities } = await req.json();
-
-        if (!session || !session.user) {
+        if (!session?.user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Verify ownership first
+        const body = await req.json();
+        const { title, description, location, address, contactEmail, contactPhone, pricePerNight, maxGuests, images, facilities, icalUrl } = body;
+
+        // Verify ownership
         const existingProperty = await db.property.findUnique({
             where: { id: params.id, hostId: session.user.id }
         });
@@ -54,25 +59,61 @@ export async function PATCH(
             return NextResponse.json({ error: "Not found or unauthorized" }, { status: 404 });
         }
 
-        const property = await db.property.update({
-            where: {
-                id: params.id
-            },
-            data: {
+        // Lazy Migration Transaction
+        const updated = await db.$transaction(async (tx) => {
+            // 1. Update basic fields & clear legacy column if using new images
+            const updateData: any = {
                 title,
                 description,
                 location,
-                pricePerNight,
+                address,
+                contactEmail,
+                contactPhone,
                 maxGuests: maxGuests ? parseInt(maxGuests) : undefined,
-                images,
-                facilities
+                facilities,
+                icalUrl
+            };
+
+            if (pricePerNight) updateData.pricePerNight = pricePerNight;
+
+            // If images are provided (array of objects or legacy strings handled by frontend to be objects)
+            // We assume frontend sends the FULL list of desired images.
+
+            if (images && Array.isArray(images)) {
+                // Check if it's the new format (objects)
+                const isNewFormat = images.length > 0 && typeof images[0] === 'object';
+
+                if (isNewFormat || images.length === 0) {
+                    // Clear legacy column
+                    updateData.images = [];
+
+                    // Replace PropertyImages
+                    await tx.propertyImage.deleteMany({
+                        where: { propertyId: params.id }
+                    });
+
+                    if (images.length > 0) {
+                        await tx.propertyImage.createMany({
+                            data: images.map((img: any) => ({
+                                propertyId: params.id,
+                                url: img.url,
+                                caption: img.caption || ""
+                            }))
+                        });
+                    }
+                }
             }
+
+            return await tx.property.update({
+                where: { id: params.id },
+                data: updateData
+            });
         });
 
-        return NextResponse.json(property);
+        return NextResponse.json(updated);
     } catch (error) {
         console.error("[PROPERTY_PATCH]", error);
-        return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+        return NextResponse.json({ error: `Internal Error: ${(error as Error).message}` }, { status: 500 });
     }
 }
 

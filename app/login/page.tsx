@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 function LoginForm() {
@@ -15,6 +16,7 @@ function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,8 +38,23 @@ function LoginForm() {
                     setError(res?.error || "Login failed");
                 }
             } else {
-                router.push(callbackUrl);
-                router.refresh(); // Refresh to update session state
+                // Fetch the updated session to get the role
+                const session = await getSession();
+                const role = session?.user?.role;
+
+                if (callbackUrl === "/" || callbackUrl === "/login") {
+                    if (role === "HOST") {
+                        router.push("/host/dashboard");
+                    } else if (role === "GUEST") {
+                        router.push("/guest/dashboard");
+                    } else {
+                        router.push("/");
+                    }
+                } else {
+                    router.push(callbackUrl);
+                }
+
+                router.refresh();
             }
         } catch (err: any) {
             setError("Something went wrong.");
@@ -81,13 +98,26 @@ function LoginForm() {
 
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Password</label>
-                        <input
-                            required
-                            type="password"
-                            className="flex h-10 w-full rounded-md border border-input px-3 py-2"
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        />
+                        <div className="relative">
+                            <input
+                                required
+                                type={showPassword ? "text" : "password"}
+                                className="flex h-10 w-full rounded-md border border-input px-3 py-2 pr-10"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 focus:outline-none"
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex justify-end">

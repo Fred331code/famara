@@ -4,11 +4,11 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || "re_123456789");
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password } = await req.json();
+        const { name, email, password, role } = await req.json();
 
         if (!email || !password || !name) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
                 password: hashedPassword,
                 verificationToken,
                 isVerified: false,
-                role: 'HOST' // Defaulting to HOST for this flow, or could be GUEST
+                role: (role === 'HOST' || role === 'GUEST') ? role : 'GUEST'
             }
         });
 
