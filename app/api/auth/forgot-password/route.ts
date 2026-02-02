@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         const resetLink = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
         const { data, error } = await resend.emails.send({
-            from: "onboarding@resend.dev",
+            from: "Famara Booking <info@hotelinlanzarote.com>",
             to: email,
             subject: "Reset your password - Famara Booking",
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 1 hour.</p>`
